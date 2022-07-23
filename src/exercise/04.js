@@ -10,26 +10,41 @@ export function useLocalStorage(key, initialValue) {
     ✅ in this hook, use the useState hook. For the initial value for state:
     use the value saved in localStorage OR the initialValue from the function parameters 
   */
+  function changeToObj(vKey){
+    const value = localStorage.getItem(vKey);
+    try {
+      return JSON.parse(value);
+    } catch {}
+    return value
+  }
+  
 
+  const [state, setState] = useState(changeToObj(key));
   /* 
    ✅ write a useEffect hook 
    in the useEffect, when state is updated, save the state to localStorage
    don't forget the dependencies array!
   */
-  useEffect(() => {});
+  useEffect(() => {
+    const value = JSON.stringify(state);
+    window.localStorage.setItem(key,value)
+    setState(state)
+  },[key,state]);
 
   /* 
    ✅ return the same interface as useState:
    an array with state and a setState function
   */
-  // 👀 return [state, setState]
+  return [state, setState]
 }
 
 function Form() {
   // ✅ after implementing the useLocalStorage hook, replace useState with useLocalStorage
   // don't forget to pass in both arguments (a key and an initialValue)
-  const [name, setName] = useState("");
+  let initialValue = window.localStorage.getItem("name")
+  const [name, setName] = useLocalStorage("name",initialValue);
   console.log(name);
+
 
   return (
     <form style={{ display: "flex", flexDirection: "column" }}>
@@ -42,10 +57,8 @@ function Form() {
 
 function FormWithObject() {
   // 🤓 save me for the bonus! when you're ready, update this useState to use your useLocalStorage hook instead
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-  });
+  let initialValue = window.localStorage.getItem("formobject")
+  const [formData, setFormData] = useLocalStorage("formobject",initialValue);
 
   function handleChange(e) {
     setFormData(formData => ({
